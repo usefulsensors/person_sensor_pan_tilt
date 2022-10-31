@@ -101,7 +101,7 @@ You'll need to find the right bundle for your CircuitPython version.
 Once you have that downloaded, unpack the bundle on your local machine. In the
 file viewer, go to the `lib` folder within the unpacked bundle and copy the
 `adafruit_motor` directory into the `lib` folder on the `CIRCUITPYTHON` drive.
-This should install the library we need to emulate a keyboard.
+This should install the library we need to drive the servos.
 
 ## Install the Code
 
