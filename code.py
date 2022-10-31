@@ -33,6 +33,7 @@ PERSON_SENSOR_DELAY = 0.2
 
 # Controls how fast the carousel moves.
 PAN_SPEED = 0.1
+TILT_SPEED = 0.1
 
 # The Pico doesn't support board.I2C(), so check before calling it. If it isn't
 # present then we assume we're on a Pico and call an explicit function.
@@ -46,14 +47,19 @@ while not i2c.try_lock():
     pass
 
 # Servo setup
-pwm_servo = pwmio.PWMOut(board.GP0, duty_cycle=2 ** 15, frequency=50)
+pwm_pan_servo = pwmio.PWMOut(board.GP0, duty_cycle=2 ** 15, frequency=50)
 pan_servo = servo.Servo(
-    pwm_servo, min_pulse=500, max_pulse=2200
+    pwm_pan_servo, min_pulse=500, max_pulse=2200
 )
-
 desired_pan = 90
-
 pan_servo.angle = desired_pan
+
+pwm_tilt_servo = pwmio.PWMOut(board.GP1, duty_cycle=2 ** 15, frequency=50)
+tilt_servo = servo.Servo(
+    pwm_tilt_servo, min_pulse=500, max_pulse=2200
+)
+desired_tilt = 90
+tilt_servo.angle = desired_tilt
 
 while True:
     read_data = bytearray(PERSON_SENSOR_RESULT_BYTE_COUNT)
@@ -90,13 +96,23 @@ while True:
     # use that to center our servo.
     if num_faces > 0:
         main_face = faces[0]
+
         face_center_x = (main_face["box_left"] + main_face["box_right"]) / 2
         pan_delta = (face_center_x - 128) * PAN_SPEED
-        desired_pan += pan_delta
+        desired_pan -= pan_delta
         if desired_pan > 180:
             desired_pan = 180
         elif desired_pan < 0:
             desired_pan = 0
         pan_servo.angle = desired_pan
+
+        face_center_y = (main_face["box_top"] + main_face["box_bottom"]) / 2
+        tilt_delta = (face_center_y - 128) * TILT_SPEED
+        desired_tilt -= tilt_delta
+        if desired_tilt > 180:
+            desired_tilt = 180
+        elif desired_tilt < 0:
+            desired_tilt = 0
+        tilt_servo.angle = desired_tilt
 
     time.sleep(0.2)
