@@ -1,4 +1,4 @@
-# Person Sensor Pan/Tily
+# Person Sensor Pan/Tilt
 Orient a pan/tilt stand to the nearest face using a Person Sensor.
 
 ## Introduction
